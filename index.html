@@ -229,10 +229,15 @@
   function bonkSound() { beep(140, 0.25, "sawtooth", 0.10); }
 
   // ---------- Game state ----------
-  var state = "start"; // start | play | story | over
+  var state = "start"; // start | play | celebrate | story | over
   var score = 0, lives = 3;
   var level = 1, pearlsInLevel = 0, levelBanner = 0;
   function goalForLevel(l) { return 3 + l * 2; } // L1:5, L2:7, L3:9, ...
+
+  // ---------- Level-complete celebration (confetti before the Dragon Fact) ----------
+  var CELEBRATE_DURATION = 2.4; // seconds
+  var celebrateTimer = 0, celebrateBurst2Done = false;
+  var confetti = [];
 
   // ---------- Dragon Facts (shown between levels) ----------
   // Kid-friendly (ages 5-8), culturally grounded facts about Chinese dragons.
@@ -391,6 +396,7 @@
   function reset() {
     score = 0; lives = 3; invuln = 0;
     level = 1; pearlsInLevel = 0; levelBanner = 0;
+    celebrateTimer = 0; celebrateBurst2Done = false; confetti = [];
     target.x = W / 2; target.y = H / 2;
     segments = [];
     for (var i = 0; i < baseLen; i++) segments.push({ x: W / 2, y: H / 2 + i * segLen });
@@ -405,15 +411,79 @@
   function nianTarget(l) { return Math.min(1 + Math.ceil(l * 1.4), 12); } // L1:3 L2:4 L3:6 ... cap 12
   function nianSpeed(l) { return rand(0.9, 1.5) + (l - 1) * 0.5; }
 
-  // Finished a level -> pause the game and show a Dragon Fact.
+  // Confetti particles for the level-complete celebration.
+  var CONFETTI_COLORS = ["#ffd34d", "#ff5a7a", "#3fc9b0", "#ff6fb0", "#1fae5a", "#fff2a8"];
+  function spawnConfettiBurst(cx, cy, count) {
+    for (var i = 0; i < count; i++) {
+      confetti.push({
+        x: cx + rand(-40, 40), y: cy + rand(-20, 20),
+        vx: rand(-3, 3), vy: rand(-7, -3),
+        rot: rand(0, 6.28), vrot: rand(-0.25, 0.25),
+        w: rand(6, 11), h: rand(9, 15),
+        color: CONFETTI_COLORS[Math.floor(rand(0, CONFETTI_COLORS.length))]
+      });
+    }
+  }
+  function spawnConfettiRain(count) {
+    for (var i = 0; i < count; i++) {
+      confetti.push({
+        x: rand(0, W), y: rand(-H * 0.6, -10),
+        vx: rand(-1, 1), vy: rand(1, 3),
+        rot: rand(0, 6.28), vrot: rand(-0.2, 0.2),
+        w: rand(6, 11), h: rand(9, 15),
+        color: CONFETTI_COLORS[Math.floor(rand(0, CONFETTI_COLORS.length))]
+      });
+    }
+  }
+
+  // Finished a level -> celebrate with confetti before the Dragon Fact.
+  function enterCelebrate() {
+    state = "celebrate";
+    celebrateTimer = CELEBRATE_DURATION;
+    celebrateBurst2Done = false;
+    confetti = [];
+    var head = segments[0];
+    spawnConfettiBurst(head.x, head.y, 34);
+    spawnConfettiRain(40);
+    spawnSparkle(head.x, head.y, "#ffd34d");
+    spawnSparkle(head.x, head.y, "#fff2a8");
+    // cheerful ascending chime
+    var notes = [523, 587, 659, 784, 1046];
+    notes.forEach(function (freq, i) {
+      setTimeout(function () { beep(freq, 0.18, "triangle", 0.11); }, i * 80);
+    });
+    setTimeout(function () { beep(1568, 0.3, "sine", 0.09); }, notes.length * 80 + 60);
+  }
+
+  function updateCelebrate(dt) {
+    celebrateTimer -= dt;
+    if (!celebrateBurst2Done && celebrateTimer < CELEBRATE_DURATION - 0.9) {
+      celebrateBurst2Done = true;
+      spawnConfettiBurst(W * 0.28, H * 0.32, 18);
+      spawnConfettiBurst(W * 0.72, H * 0.32, 18);
+    }
+    for (var i = confetti.length - 1; i >= 0; i--) {
+      var c = confetti[i];
+      c.vy += 0.22; // gravity
+      c.x += c.vx; c.y += c.vy; c.rot += c.vrot;
+      if (c.y > H + 30) confetti.splice(i, 1);
+    }
+    // sparkles keep their own physics too, since update() is paused during celebrate
+    for (var s = sparkles.length - 1; s >= 0; s--) {
+      var sp = sparkles[s];
+      sp.x += sp.vx; sp.y += sp.vy; sp.vx *= 0.92; sp.vy *= 0.92;
+      sp.life -= dt * 2;
+      if (sp.life <= 0) sparkles.splice(s, 1);
+    }
+    if (celebrateTimer <= 0) {
+      confetti = [];
+      enterStory();
+    }
+  }
+
+  // Pause on the fact for this level (called automatically once the celebration finishes).
   function enterStory() {
     state = "story";
-    spawnSparkle(segments[0].x, segments[0].y, "#ffd34d");
-    spawnSparkle(segments[0].x, segments[0].y, "#fff2a8");
-    beep(660, 0.12, "triangle", 0.10);
-    setTimeout(function () { beep(880, 0.12, "triangle", 0.10); }, 90);
-    setTimeout(function () { beep(1180, 0.16, "triangle", 0.10); }, 190);
-
     var fact = FACTS[(level - 1) % FACTS.length]; // fact for the level just finished
     currentFactText = fact.text;
     document.getElementById("storyPic").innerHTML = fact.svg;
@@ -534,8 +604,8 @@
           var tail = segments[segments.length - 1];
           segments.push({ x: tail.x, y: tail.y });
         }
-        // Reached the pearl goal for this level? Show a Dragon Fact, then advance.
-        if (pearlsInLevel >= goalForLevel(level)) enterStory();
+        // Reached the pearl goal for this level? Celebrate, then show a Dragon Fact.
+        if (pearlsInLevel >= goalForLevel(level)) enterCelebrate();
       }
     }
 
@@ -866,6 +936,79 @@
       ctx.fillText(nm2 + " flies faster!", W / 2, H / 2 + 34);
       ctx.restore();
     }
+
+    if (state === "celebrate") drawCelebrate();
+  }
+
+  function drawConfettiPiece(c, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(c.x, c.y);
+    ctx.rotate(c.rot);
+    ctx.fillStyle = c.color;
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+    ctx.restore();
+  }
+
+  // Level-complete celebration: dim overlay, rotating gold starburst, confetti, bouncy title.
+  function drawCelebrate() {
+    var elapsed = CELEBRATE_DURATION - celebrateTimer;
+
+    ctx.save();
+    ctx.globalAlpha = Math.min(0.45, elapsed * 1.5);
+    ctx.fillStyle = "#4a0606";
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // rotating gold starburst behind the title
+    ctx.save();
+    ctx.translate(W / 2, H / 2 - 10);
+    ctx.rotate(elapsed * 0.6);
+    ctx.globalAlpha = 0.25;
+    ctx.fillStyle = "#ffd34d";
+    var rays = 10, r1 = 40, r2 = W * 0.55;
+    ctx.beginPath();
+    for (var i = 0; i < rays * 2; i++) {
+      var ang = (i / (rays * 2)) * 6.283;
+      var rr = i % 2 === 0 ? r2 : r1;
+      var rx = Math.cos(ang) * rr, ry = Math.sin(ang) * rr;
+      if (i === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // confetti, fading out gently in the final half-second
+    var confettiAlpha = Math.min(1, celebrateTimer / 0.5);
+    for (var c = 0; c < confetti.length; c++) drawConfettiPiece(confetti[c], confettiAlpha);
+
+    // bouncy "Level N Complete!" title
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    var bounce = Math.exp(-elapsed * 6) * Math.cos(elapsed * 16);
+    var scale = 1 + Math.max(-0.35, bounce * 0.4);
+    ctx.globalAlpha = Math.min(1, elapsed * 4);
+    ctx.translate(W / 2, H * 0.38);
+    ctx.scale(scale, scale);
+    ctx.font = "bold 58px 'Comic Sans MS', sans-serif";
+    ctx.lineWidth = 9; ctx.strokeStyle = "#7a0d0d";
+    ctx.fillStyle = "#ffd34d";
+    var title = "Level " + level + " Complete!";
+    ctx.strokeText(title, 0, 0);
+    ctx.fillText(title, 0, 0);
+    ctx.restore();
+
+    // sub text
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.globalAlpha = Math.min(1, Math.max(0, (elapsed - 0.3) * 3));
+    ctx.font = "bold 28px 'Comic Sans MS', sans-serif";
+    ctx.fillStyle = "#ffe9a8";
+    var nm3 = (DRAGONS[chosen] || {}).name || "Dragon";
+    ctx.fillText("🎉 Great flying, " + nm3 + "! 🎉", W / 2, H * 0.38 + 56);
+    ctx.restore();
   }
 
   // ---------- Loop ----------
@@ -880,6 +1023,7 @@
     lastTime = now;
     lastFrameAt = now;
     if (state === "play") update(dt);
+    else if (state === "celebrate") updateCelebrate(dt);
     draw();
   }
   function rafLoop(now) { step(now); requestAnimationFrame(rafLoop); }
