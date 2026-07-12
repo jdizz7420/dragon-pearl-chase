@@ -243,6 +243,7 @@
   // Kid-friendly (ages 5-8), culturally grounded facts about Chinese dragons.
   var FACTS = [
     { title: "Friendly Dragons",
+      audio: "audio/friendly-dragons.mp3",
       text: "In China, dragons are kind and gentle, not scary at all! People love them because they bring good luck and happiness.",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -257,6 +258,7 @@
         '<path d="M100 70 c-3 -5 -12 -3 -12 3 c0 6 12 13 12 13 c0 0 12 -7 12 -13 c0 -6 -9 -8 -12 -3 z" fill="#ff5a7a"/>' +
         '</svg>' },
     { title: "Rain Bringers",
+      audio: "audio/rain-bringers.mp3",
       text: "Chinese dragons are magical water spirits. Long ago, people believed dragons lived in rivers and clouds and sent rain to help the plants grow.",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -271,6 +273,7 @@
         '<g fill="#bfe3ff"><ellipse cx="48.5" cy="72" rx="1.6" ry="2.6"/><ellipse cx="66.5" cy="76" rx="1.6" ry="2.6"/><ellipse cx="84.5" cy="72" rx="1.6" ry="2.6"/></g>' +
         '</svg>' },
     { title: "The Glowing Pearl",
+      audio: "audio/glowing-pearl.mp3",
       text: "Have you seen a dragon chasing a glowing pearl? The pearl is a special treasure that stands for wisdom and good luck. Catch it to grow wise and strong!",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -283,6 +286,7 @@
         '<path d="M84 30 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6 z"/></g>' +
         '</svg>' },
     { title: "The Dragon Dance",
+      audio: "audio/dragon-dance.mp3",
       text: "At Chinese New Year, people hold up a long, colorful dragon on poles and make it dance in the streets to welcome a happy, lucky new year!",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -298,6 +302,7 @@
         '<circle cx="68" cy="42" r="5" fill="#fff"/><circle cx="69" cy="43" r="2.4" fill="#111"/>' +
         '</svg>' },
     { title: "The Nián Monster",
+      audio: "audio/nian-monster.mp3",
       text: "Long ago a monster called the Nián (say: \"nee-en\") came every New Year. People learned it was afraid of loud bangs and the color red, so they used firecrackers and red decorations to chase it away. That's why red means good luck!",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -314,6 +319,7 @@
         '<path d="M39 76 l2 5 l2 -5 z M49 76 l2 5 l2 -5 z" fill="#fff"/>' +
         '</svg>' },
     { title: "Made of Many Animals",
+      audio: "audio/many-animals.mp3",
       text: "A Chinese dragon is made from many animals: a snake's body, a deer's antlers, an eagle's claws, and shiny fish scales. Chinese dragons even have long whiskers and horns!",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -329,6 +335,7 @@
         '<path d="M84 88 l8 8 M90 86 l6 10 M96 88 l4 10"/></g>' +
         '</svg>' },
     { title: "The Emperor's Symbol",
+      audio: "audio/emperors-symbol.mp3",
       text: "Long ago, the dragon was the special sign of the emperor, the ruler of all China. Only he was allowed to wear golden dragons on his robes.",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -339,6 +346,7 @@
         '<circle cx="50" cy="26" r="2.6" fill="#ff5a7a"/><circle cx="60" cy="36" r="2.6" fill="#4aa3e0"/><circle cx="70" cy="26" r="2.6" fill="#ff5a7a"/>' +
         '</svg>' },
     { title: "Year of the Dragon",
+      audio: "audio/year-of-the-dragon.mp3",
       text: "The dragon is one of 12 special animals in the Chinese zodiac calendar. Children born in the Year of the Dragon are said to be brave and strong!",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -353,6 +361,7 @@
         '<path d="M50 58 q6 -8 12 -2 q-4 6 -10 4 q6 4 12 -2" stroke="#ffd34d" stroke-width="3" fill="none" stroke-linecap="round"/>' +
         '</svg>' },
     { title: "Guardian Dragons",
+      audio: "audio/guardian-dragons.mp3",
       text: "People carve dragons on temples, gates, and bridges because dragons are brave guardians who watch over homes and keep families safe.",
       svg: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="60" cy="60" r="54" fill="#fff4d6" stroke="#ffc42e" stroke-width="4"/>' +
@@ -367,6 +376,7 @@
         '</svg>' }
   ];
   var currentFactText = "";
+  var currentFactAudio = "";
   var best = 0;
   try { best = parseInt(localStorage.getItem("dragonBest") || "0", 10) || 0; } catch (e) {}
 
@@ -486,6 +496,7 @@
     state = "story";
     var fact = FACTS[(level - 1) % FACTS.length]; // fact for the level just finished
     currentFactText = fact.text;
+    currentFactAudio = fact.audio || "";
     document.getElementById("storyPic").innerHTML = fact.svg;
     document.getElementById("storyBadge").textContent = "Level " + level + " done!";
     document.getElementById("storyTitle").textContent = fact.title;
@@ -508,8 +519,16 @@
     step((window.performance && performance.now) ? performance.now() : Date.now());
   }
 
-  // ---------- Read aloud (browser text-to-speech, no files) ----------
-  function speak(text) {
+  // ---------- Read aloud ----------
+  // Primary: pre-recorded narration (generated once offline with Kokoro TTS, bundled as
+  // small MP3s in audio/) so it sounds natural and still works with no internet connection.
+  // Fallback: the browser's built-in speech synthesis, only used if a clip fails to load.
+  var factAudioEl = null;
+  function getFactAudioEl() {
+    if (!factAudioEl) { factAudioEl = new Audio(); factAudioEl.preload = "none"; }
+    return factAudioEl;
+  }
+  function speakFallback(text) {
     try {
       if (!("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
@@ -518,7 +537,21 @@
       window.speechSynthesis.speak(u);
     } catch (e) {}
   }
-  function stopSpeak() { try { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); } catch (e) {} }
+  function playFact() {
+    stopSpeak();
+    if (!currentFactAudio) { speakFallback(currentFactText); return; }
+    try {
+      var a = getFactAudioEl();
+      a.onerror = function () { speakFallback(currentFactText); };
+      a.src = currentFactAudio;
+      var p = a.play();
+      if (p && p.catch) p.catch(function () { speakFallback(currentFactText); });
+    } catch (e) { speakFallback(currentFactText); }
+  }
+  function stopSpeak() {
+    try { if (factAudioEl) { factAudioEl.pause(); factAudioEl.currentTime = 0; } } catch (e) {}
+    try { if ("speechSynthesis" in window) window.speechSynthesis.cancel(); } catch (e) {}
+  }
 
   function rand(a, b) { return a + Math.random() * (b - a); }
 
@@ -1058,8 +1091,7 @@
   document.getElementById("againBtn").addEventListener("click", startGame);
   document.getElementById("continueBtn").addEventListener("click", nextLevel);
   var readBtn = document.getElementById("readBtn");
-  readBtn.addEventListener("click", function () { speak(currentFactText); });
-  if (!("speechSynthesis" in window)) readBtn.style.display = "none"; // hide if unsupported
+  readBtn.addEventListener("click", playFact);
 
   // ---------- Dragon picker ----------
   var pickEls = document.querySelectorAll(".pick");

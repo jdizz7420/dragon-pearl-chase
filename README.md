@@ -17,7 +17,8 @@ including the Silk browser on Amazon Fire tablets.
 
 Between every level, a **Dragon Facts** card appears with a short, kid-friendly
 lesson about Chinese dragons and traditions, each with its own illustration and a
-**Read to me** button (browser text-to-speech) for pre-readers:
+**Read to me** button that plays pre-recorded narration (browser text-to-speech
+is used only as an automatic fallback) for pre-readers:
 
 Friendly Dragons · Rain Bringers · The Glowing Pearl · The Dragon Dance ·
 The Nián Monster · Made of Many Animals · The Emperor's Symbol ·
@@ -51,10 +52,13 @@ python3 -m http.server 4599
 
 ## Notes
 
-- Everything is drawn with the HTML5 Canvas and inline SVG — there are no image or
-  audio files to load.
-- Sound effects use the Web Audio API; narration uses the browser's built-in
-  speech synthesis (and gracefully hides if unavailable).
+- Almost everything is drawn with the HTML5 Canvas and inline SVG — the only
+  bundled assets are the 9 small narration clips in `audio/`.
+- Sound effects use the Web Audio API. The Dragon Facts narration is
+  pre-generated once (offline, with the open-source [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M)
+  TTS model) and shipped as small MP3s, so "Read to me" sounds natural and
+  still works with no internet connection. If a clip ever fails to load, it
+  falls back to the browser's built-in speech synthesis automatically.
 
 ---
 
