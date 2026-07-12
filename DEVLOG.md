@@ -10,6 +10,16 @@ Newest at the top.
 
 ---
 
+## v0.4 — 2026-07-12
+
+- Fixed silent sound effects on iPhone: the Web Audio `AudioContext` was
+  created on the Play tap but never explicitly `resume()`d. **Why:** iOS
+  Safari frequently leaves a freshly-created (or backgrounded) context
+  "suspended" even inside a genuine tap, unlike desktop browsers, which
+  silently dropped every beep (pearl pickup, bonk, level-up chime,
+  celebration fanfare) with no error. `audio()` now resumes the context
+  whenever it's found suspended, self-healing on every beep call.
+
 ## v0.3 — 2026-07-11
 
 - Added a celebratory animation between finishing a level and the Dragon Fact

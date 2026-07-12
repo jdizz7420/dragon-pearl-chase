@@ -210,6 +210,9 @@
   var AC = null;
   function audio() {
     if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    // iOS Safari often leaves a freshly-created (or backgrounded) context "suspended"
+    // even inside a real tap, silently dropping every beep unless explicitly resumed.
+    if (AC && AC.state === "suspended") { try { AC.resume(); } catch (e) {} }
     return AC;
   }
   function beep(freq, dur, type, vol) {
