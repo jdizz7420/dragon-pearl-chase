@@ -236,6 +236,8 @@
   var score = 0, lives = 3;
   var level = 1, pearlsInLevel = 0, levelBanner = 0;
   function goalForLevel(l) { return 3 + l * 2; } // L1:5, L2:7, L3:9, ...
+  // Never show more pearls on screen than are still needed to finish the level.
+  function pearlCap(l, caught) { return Math.max(0, Math.min(4, goalForLevel(l) - caught)); }
 
   // ---------- Level-complete celebration (confetti before the Dragon Fact) ----------
   var CELEBRATE_DURATION = 2.4; // seconds
@@ -380,6 +382,20 @@
   ];
   var currentFactText = "";
   var currentFactAudio = "";
+
+  // ---------- Fact shuffle bag: random order, no repeats until every fact has been shown ----------
+  var factBag = [];
+  function refillFactBag() {
+    factBag = FACTS.map(function (_, i) { return i; });
+    for (var i = factBag.length - 1; i > 0; i--) {
+      var j = Math.floor(rand(0, i + 1));
+      var tmp = factBag[i]; factBag[i] = factBag[j]; factBag[j] = tmp;
+    }
+  }
+  function nextFact() {
+    if (factBag.length === 0) refillFactBag();
+    return FACTS[factBag.pop()];
+  }
   var best = 0;
   try { best = parseInt(localStorage.getItem("dragonBest") || "0", 10) || 0; } catch (e) {}
 
@@ -409,12 +425,13 @@
   function reset() {
     score = 0; lives = 3; invuln = 0;
     level = 1; pearlsInLevel = 0; levelBanner = 0;
+    factBag = [];
     celebrateTimer = 0; celebrateBurst2Done = false; confetti = [];
     target.x = W / 2; target.y = H / 2;
     segments = [];
     for (var i = 0; i < baseLen; i++) segments.push({ x: W / 2, y: H / 2 + i * segLen });
     pearls = []; nians = []; sparkles = [];
-    for (var p = 0; p < 4; p++) spawnPearl();
+    for (var p = 0; p < pearlCap(level, pearlsInLevel); p++) spawnPearl();
     var startN = nianTarget(level);
     for (var f = 0; f < startN; f++) spawnNian();
     spawnTimer = 0;
@@ -497,7 +514,7 @@
   // Pause on the fact for this level (called automatically once the celebration finishes).
   function enterStory() {
     state = "story";
-    var fact = FACTS[(level - 1) % FACTS.length]; // fact for the level just finished
+    var fact = nextFact(); // random fact, no repeats until the whole set has been shown
     currentFactText = fact.text;
     currentFactAudio = fact.audio || "";
     document.getElementById("storyPic").innerHTML = fact.svg;
@@ -516,6 +533,7 @@
     if (lives < 3) lives++;            // reward: a heart back (kept gentle)
     var want = nianTarget(level);
     while (nians.length < want) spawnNian();
+    while (pearls.length < pearlCap(level, pearlsInLevel)) spawnPearl();
     levelBanner = 1.6;                 // quick "Level N!" flash as play resumes
     lastTime = 0;
     state = "play";
@@ -634,12 +652,7 @@
         pearlSound();
         spawnSparkle(pe.x, pe.y, "#ffd34d");
         pearls.splice(p, 1);
-        spawnPearl();
-        // Dragon grows a little, up to a limit
-        if (segments.length < 60) {
-          var tail = segments[segments.length - 1];
-          segments.push({ x: tail.x, y: tail.y });
-        }
+        if (pearls.length < pearlCap(level, pearlsInLevel)) spawnPearl();
         // Reached the pearl goal for this level? Celebrate, then show a Dragon Fact.
         if (pearlsInLevel >= goalForLevel(level)) enterCelebrate();
       }
