@@ -10,6 +10,21 @@ Newest at the top.
 
 ---
 
+## v0.5 — 2026-07-12
+**Commit:** `8480ace` — Randomize Dragon Facts, cap on-screen pearls to level goal, remove dragon growth
+
+- Dragon Facts now draw from a shuffle bag instead of cycling in a fixed
+  order, so no fact repeats until the whole set has been shown, then it
+  reshuffles. **Why:** requested — the sequential order made facts
+  predictable across playthroughs.
+- The number of pearls floating on screen at once is now capped to how many
+  are still needed to finish the level, instead of always keeping 4 afloat
+  regardless of the goal. **Why:** requested — showing more pearls than are
+  needed to complete the level had no purpose.
+- Catching a pearl no longer lengthens the dragon's body. **Why:** requested
+  — body segments don't collide with anything, so growth had no gameplay
+  effect.
+
 ## v0.4 — 2026-07-12
 
 - Fixed silent sound effects on iPhone: the Web Audio `AudioContext` was
